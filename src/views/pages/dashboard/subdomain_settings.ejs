@@ -1,0 +1,68 @@
+<%# src/views/pages/dashboard/subdomain_settings.ejs %>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="h2"><i class="fas fa-link me-2"></i>Subdomain Settings for <%= website.name %></h1>
+        <a href="/dashboard/websites/<%= website._id %>/edit" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Back to Editor
+        </a>
+    </div>
+
+    <%- include('../../partials/messages') %>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Configure Your Site's Subdomain</h5>
+        </div>
+        <div class="card-body p-4">
+            <p class="lead">Your site will be accessible at:
+                <strong class="text-success">
+                    <span id="subdomainPreview"><%= website.subdomain && website.subdomain.prefix ? website.subdomain.prefix : '[your-prefix]' %></span>.<%= appHostname %>
+                </strong>
+            </p>
+            <hr>
+            <form action="/dashboard/websites/<%= website._id %>/subdomain" method="POST">
+                <div class="mb-3">
+                    <label for="newSubdomainPrefix" class="form-label">Desired Subdomain Prefix</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control form-control-lg" id="newSubdomainPrefix" name="newSubdomainPrefix"
+                               placeholder="e.g., myshop, portfolio, blog"
+                               value="<%= website.subdomain && website.subdomain.prefix ? website.subdomain.prefix : '' %>"
+                               aria-describedby="subdomainHelp" required
+                               onkeyup="document.getElementById('subdomainPreview').textContent = this.value || '[your-prefix]';">
+                        <span class="input-group-text">.<%= appHostname %></span>
+                    </div>
+                    <div id="subdomainHelp" class="form-text">
+                        Choose a short, memorable prefix. Only letters, numbers, and hyphens.
+                        This will be part of your site's public URL.
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save me-1"></i>Update Subdomain</button>
+            </form>
+
+            <hr class="my-4">
+            <h5><i class="fas fa-network-wired me-2"></i>DNS Status</h5>
+            <% if (website.subdomain && website.subdomain.prefix) { %>
+                <p>
+                    <strong>Current Subdomain:</strong>
+                    <code><%= website.subdomain.prefix %>.<%= appHostname %></code>
+                </p>
+                <p>
+                    <strong>DNS Record Active:</strong>
+                    <% if (website.subdomain.isDnsActive) { %>
+                        <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i>Active</span>
+                        (Points to: <code><%= mainAppCnameTarget %></code>)
+                    <% } else { %>
+                        <span class="badge bg-warning text-dark"><i class="fas fa-hourglass-half me-1"></i>Inactive or Pending</span>
+                        (Should point to: <code><%= mainAppCnameTarget %></code>)
+                    <% } %>
+                </p>
+                <p class="small text-muted">
+                    If DNS is inactive after updating, it might be due to an issue creating the record on Cloudflare, or DNS propagation delays (can take minutes to hours).
+                    The system will attempt to create a CNAME record automatically.
+                </p>
+            <% } else { %>
+                <p class="text-muted fst-italic">No subdomain prefix configured yet. Set one above to activate your site's URL.</p>
+            <% } %>
+        </div>
+    </div>
+</div>

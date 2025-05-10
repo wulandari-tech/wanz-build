@@ -1,121 +1,225 @@
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block editor-sidebar sidebar collapse">
-            <div class="position-sticky pt-3">
-                <h4 class="h5 px-3 mb-3 d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-sitemap me-2"></i><%= website.name %></span>
-                </h4>
+<div class="container-fluid vh-100 d-flex flex-column p-0">
+    <div class="row g-0 flex-grow-1">
+        <nav id="sidebarMenu" class="col-md-4 col-lg-3 d-md-block editor-sidebar sidebar collapse bg-light border-end shadow-sm">
+            <div class="position-sticky d-flex flex-column h-100 pt-3">
                 <div class="px-3 mb-3">
+                    <h4 class="h5 d-flex justify-content-between align-items-center text-primary mb-1">
+                        <span class="text-truncate" title="<%= website.name %>"><i class="fas fa-sitemap me-2"></i><%= website.name %></span>
+                    </h4>
+                    <div class="mb-2">
+                        <% if (website.subdomain && website.subdomain.prefix) { %>
+                            <% const siteUrl = `${website.subdomain.prefix}.${appHostname}` %>
+                            <a href="http://<%= siteUrl %>" target="_blank" class="text-muted small text-decoration-none" data-bs-toggle="tooltip" title="Visit http://<%= siteUrl %>">
+                                <i class="fas fa-external-link-alt fa-xs"></i> <%= siteUrl %>
+                            </a>
+                        <% } else { %>
+                            <span class="text-muted small fst-italic">Default path: /s/<%= website.internalSlug %></span>
+                        <% } %>
+                    </div>
+
                     <% if (website.isPublished) { %>
                         <form action="/dashboard/websites/<%= website._id %>/unpublish" method="POST" class="d-grid mb-1">
-                            <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-eye-slash me-1"></i>Unpublish</button>
+                            <button type="submit" class="btn btn-warning btn-sm shadow-sm"><i class="fas fa-eye-slash me-1"></i>Unpublish Site</button>
                         </form>
-                        <a href="/s/<%= website.slug %><%= currentPage ? currentPage.path : '' %>" target="_blank" class="btn btn-outline-secondary btn-sm d-block">
+                        <% if (website.subdomain && website.subdomain.prefix) { %>
+                        <a href="http://<%= website.subdomain.prefix %>.<%= appHostname %><%= currentPage ? currentPage.path : '' %>" target="_blank" class="btn btn-outline-secondary btn-sm d-block shadow-sm">
                             <i class="fas fa-external-link-alt me-1"></i>View Live Page
                         </a>
+                        <% } %>
                     <% } else { %>
                         <form action="/dashboard/websites/<%= website._id %>/publish" method="POST" class="d-grid">
-                            <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-globe me-1"></i>Publish Site</button>
+                            <button type="submit" class="btn btn-success btn-sm shadow-sm"><i class="fas fa-globe me-1"></i>Publish Site</button>
                         </form>
                     <% } %>
                 </div>
-
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span><i class="far fa-file-alt me-1"></i> Pages</span>
+                <hr class="mx-3 my-2">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted text-uppercase small">
+                    <span><i class="far fa-file-alt me-2"></i>Pages</span>
                     <a class="link-secondary" href="/dashboard/websites/<%= website._id %>/pages/new" aria-label="Add new page" data-bs-toggle="tooltip" data-bs-placement="top" title="Add New Page">
-                        <i class="fas fa-plus-circle"></i>
+                        <i class="fas fa-plus-circle fs-5 text-primary"></i>
                     </a>
                 </h6>
-                <% if (pages && pages.length > 0) { %>
-                    <ul class="nav flex-column">
-                        <% pages.forEach(page => { %>
-                            <li class="nav-item page-list-item">
-                                <a href="/dashboard/websites/<%= website._id %>/edit?page=<%= encodeURIComponent(page.path) %>"
-                                   class="nav-link flex-grow-1 <%= (currentPage && currentPage.path === page.path) ? 'active fw-bold' : 'text-dark' %>">
-                                    <%= page.name %> <small class="text-muted">(<%= page.path %>)</small>
-                                </a>
-                                <% if (page.path !== '/') { %>
-                                <div class="actions">
-                                    <form action="/dashboard/websites/<%= website._id %>/pages/<%= page._id %>/delete" method="POST" class="delete-confirm">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="Delete Page">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                                <% } %>
-                            </li>
-                        <% }); %>
-                    </ul>
-                <% } else { %>
-                    <p class="px-3 text-muted small">No pages yet. Click '+' to add one.</p>
-                <% } %>
+                <div class="flex-grow-1 overflow-auto">
+                    <% if (pages && pages.length > 0) { %>
+                        <ul class="nav flex-column">
+                            <% pages.forEach(page => { %>
+                                <li class="nav-item page-list-item <%= (currentPage && currentPage._id.equals(page._id)) ? 'bg-primary-soft' : '' %>">
+                                    <a href="/dashboard/websites/<%= website._id %>/edit?page=<%= encodeURIComponent(page.path) %>"
+                                       class="nav-link flex-grow-1 <%= (currentPage && currentPage._id.equals(page._id)) ? 'active fw-bold text-primary' : 'text-dark' %> py-2">
+                                        <%= page.name %> <small class="text-muted d-block">(<%= page.path %>)</small>
+                                    </a>
+                                    <div class="actions me-2">
+                                        <% if (page.path !== '/') { %>
+                                        <form action="/dashboard/websites/<%= website._id %>/pages/<%= page._id %>/delete" method="POST" class="delete-confirm d-inline" data-item-name="<%= page.name %>">
+                                            <button type="submit" class="btn btn-link text-danger p-0" data-bs-toggle="tooltip" title="Delete Page">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                        <% } else { %>
+                                            <i class="fas fa-home text-muted" data-bs-toggle="tooltip" title="Homepage cannot be deleted if it's the only page."></i>
+                                        <% } %>
+                                    </div>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    <% } else { %>
+                        <p class="px-3 text-muted small fst-italic">No pages yet. Click '+' to add one.</p>
+                    <% } %>
+                </div>
 
-                 <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span><i class="fas fa-cog me-1"></i> Settings</span>
+                <hr class="mx-3 my-2">
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted text-uppercase small">
+                    <span><i class="fas fa-cog me-2"></i>Site Settings</span>
                 </h6>
                 <ul class="nav flex-column mb-2">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="#">
-                           <i class="fas fa-paint-brush fa-fw me-2"></i> Appearance
-                        </a>
-                    </li>
-                     <li class="nav-item">
-                        <a class="nav-link text-dark" href="#">
-                           <i class="fas fa-share-alt fa-fw me-2"></i> SEO & Sharing
-                        </a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link text-dark py-2" href="#"><i class="fas fa-tools fa-fw me-2"></i> General</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark py-2" href="/dashboard/websites/<%= website._id %>/subdomain"><i class="fas fa-link fa-fw me-2"></i> Subdomain</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark py-2" href="#"><i class="fas fa-paint-brush fa-fw me-2"></i> Appearance</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark py-2" href="#"><i class="fas fa-share-alt fa-fw me-2"></i> SEO</a></li>
                 </ul>
-
-
-                <div class="px-3 mt-auto pt-3 border-top">
-                    <a href="/dashboard" class="btn btn-outline-dark btn-sm w-100"><i class="fas fa-arrow-left me-1"></i>Back to Dashboard</a>
+                <div class="px-3 mt-auto py-3 border-top">
+                    <a href="/dashboard" class="btn btn-outline-dark btn-sm w-100 shadow-sm"><i class="fas fa-arrow-left me-1"></i>Back to My Websites</a>
                 </div>
             </div>
         </nav>
 
-        <!-- Main content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 editor-main-content">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <main class="col-md-8 col-lg-9 ms-sm-auto px-md-4 editor-main-content py-3 d-flex flex-column">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                 <% if (currentPage) { %>
-                    <h1 class="h3">Editing Page: <span class="fw-normal"><%= currentPage.name %></span></h1>
+                    <h1 class="h2 text-truncate" title="<%= currentPage.name %>">Editing: <span class="fw-semibold text-primary"><%= currentPage.name %></span></h1>
                 <% } else { %>
-                     <h1 class="h3 text-danger">No Page Selected or Found</h1>
+                     <h1 class="h2 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>No Page Selected</h1>
                 <% } %>
-                <!-- Actions for the current page/site -->
+                <div>
+                    <% if (currentPage) { %>
+                    <button class="btn btn-sm btn-outline-secondary me-2 shadow-sm" type="button" data-bs-toggle="collapse" data-bs-target="#pageSettingsCollapse" aria-expanded="false" aria-controls="pageSettingsCollapse">
+                        <i class="fas fa-sliders-h me-1"></i> Page Settings
+                    </button>
+                    <% } %>
+                </div>
             </div>
 
             <%- include('../../partials/messages') %>
 
             <% if (currentPage) { %>
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header">
-                       <h5 class="mb-0"><i class="fas fa-puzzle-piece me-2"></i>Page Content Structure (JSON)</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text small text-muted">
-                            This is a raw JSON representation of your page's content. In a full visual editor, you would manipulate this through a drag-and-drop interface.
-                            For now, you can edit the JSON directly. Make sure it's valid JSON.
-                            Example: <code>{"elements": [{"type": "headline", "content": "My Title"}, {"type": "paragraph", "content": "Some text..."}]}</code>
-                        </p>
-                        <form action="/dashboard/websites/<%= website._id %>/pages/<%= currentPage._id %>/structure" method="POST">
-                            <div class="mb-3">
-                                <textarea name="structureData" id="pageStructureJson" class="form-control" rows="15"><%= JSON.stringify(currentPage.structure, null, 2) %></textarea>
+                <div class="collapse mb-3" id="pageSettingsCollapse">
+                    <div class="card card-body bg-light border-dashed shadow-sm">
+                        <h5 class="card-title"><i class="fas fa-cogs me-2"></i>Page Settings: "<%= currentPage.name %>"</h5>
+                        <form action="/dashboard/websites/<%= website._id %>/pages/<%= currentPage._id %>/settings" method="POST">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="pageName" class="form-label">Page Name</label>
+                                    <input type="text" class="form-control" id="pageName" name="pageName" value="<%= currentPage.name %>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="pagePath" class="form-label">Page Path (URL)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">/s/<%= website.subdomain && website.subdomain.prefix ? website.subdomain.prefix : website.internalSlug %><%= currentPage.path === '/' ? '' : '/' %></span>
+                                        <input type="text" class="form-control" id="pagePath" name="pagePath" value="<%= currentPage.path.replace(/^\//, '') %>" <%= currentPage.path === '/' ? 'readonly' : '' %>>
+                                    </div>
+                                     <% if (currentPage.path === '/') { %> <small class="form-text text-muted">Homepage path ('/') cannot be changed directly.</small> <% } %>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Page Structure</button>
+                             <div class="mb-3">
+                                <label for="pageSeoTitle" class="form-label">SEO Title Tag</label>
+                                <input type="text" class="form-control" id="pageSeoTitle" name="seo[title]" value="<%= currentPage.seo && currentPage.seo.title ? currentPage.seo.title : '' %>" placeholder="Overrides default site title for this page">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pageSeoDescription" class="form-label">SEO Meta Description</label>
+                                <textarea class="form-control" id="pageSeoDescription" name="seo[description]" rows="2" placeholder="Brief summary for search engines (approx. 160 chars)"><%= currentPage.seo && currentPage.seo.description ? currentPage.seo.description : '' %></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-success shadow-sm"><i class="fas fa-save me-1"></i>Save Page Settings</button>
                         </form>
                     </div>
                 </div>
-                <!-- Placeholder for Visual Editor - This is where the major frontend work would be -->
-                <div class="alert alert-info" role="alert">
-                    <h4 class="alert-heading"><i class="fas fa-tools me-2"></i>Visual Editor Coming Soon!</h4>
-                    <p>A more user-friendly, drag-and-drop visual editor will be implemented here to replace direct JSON editing.</p>
+
+                <div class="card shadow-sm mb-4 flex-grow-1 d-flex flex-column">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                       <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Page Content Editor</h5>
+                        <small class="text-muted">Using TinyMCE WYSIWYG</small>
+                    </div>
+                    <div class="card-body flex-grow-1 d-flex flex-column p-0">
+                        <form action="/dashboard/websites/<%= website._id %>/pages/<%= currentPage._id %>/content" method="POST" id="pageContentForm" class="d-flex flex-column flex-grow-1">
+                            <div class="flex-grow-1">
+                                <textarea name="htmlData" id="pageHtmlContent" class="form-control border-0" style="min-height: 400px; visibility: hidden;">
+                                    <%- currentPage.htmlContent %>
+                                </textarea>
+                            </div>
+                            <div class="card-footer bg-light text-end border-top-0 py-3 px-3">
+                                <button type="submit" class="btn btn-primary btn-lg shadow-sm"><i class="fas fa-save me-2"></i>Save Page Content</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             <% } else { %>
-                 <div class="alert alert-warning" role="alert">
-                    Please select a page from the sidebar to start editing, or <a href="/dashboard/websites/<%= website._id %>/pages/new">create a new page</a> if none exist.
+                 <div class="alert alert-warning text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center shadow-sm">
+                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                    <h4 class="alert-heading">No Page Selected to Edit</h4>
+                    <p>Please select a page from the sidebar to start editing its content.</p>
+                    <% if(website && website._id) { %>
+                    <p>If no pages exist, you can <a href="/dashboard/websites/<%= website._id %>/pages/new" class="alert-link fw-bold">create a new page</a> for this website.</p>
+                    <% } %>
                 </div>
             <% } %>
         </main>
     </div>
 </div>
+
+<style>
+    .editor-sidebar { min-height: 100vh; }
+    .page-list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e9ecef; }
+    .page-list-item .nav-link { border-radius: 0; }
+    .page-list-item:hover { background-color: #f8f9fa; }
+    .bg-primary-soft { background-color: rgba(13, 110, 253, 0.1); }
+    .border-dashed { border: 1px dashed #ced4da; }
+    .tox-tinymce { border-radius: 0 !important; border: none !important; } /* Agar TinyMCE mengisi card-body */
+</style>
+
+<% if (currentPage) { %>
+<script src="https://cdn.tiny.cloud/1/d9d78qnsqpziiypgbliuqosyi3gobt16hzhgdc8gsouaz6s2/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('pageHtmlContent')) {
+            tinymce.init({
+                selector: '#pageHtmlContent',
+                promotion: false, // Hapus "Powered by Tiny" jika API key Anda mengizinkan
+                plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap emoticons accordion',
+                menubar: 'file edit view insert format tools table help',
+                toolbar: 'undo redo | blocks | bold italic underline strikethrough | fontfamily fontsize | alignleft aligncenter alignright alignjustify | numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen preview save print | insertfile image media link anchor codesample | accordion accordionremove',
+                height: '100%', // Agar mengisi parent (card-body flex-grow-1)
+                content_style: 'body { font-family:Poppins,Arial,sans-serif; font-size:16px } .accordion { box-shadow: none !important; border: 1px solid #ccc; }',
+                autosave_ask_before_unload: true,
+                autosave_interval: '30s',
+                autosave_prefix: '{path}{query}-{id}-',
+                autosave_restore_when_empty: false,
+                autosave_retention: '2m',
+                image_advtab: true,
+                codesample_global_prismjs: true, // Jika Anda menggunakan PrismJS untuk syntax highlighting
+                // file_picker_types: 'image media',
+                // file_picker_callback: function (cb, value, meta) { /* ... (implementasi file picker) ... */ },
+                setup: function (editor) {
+                    editor.on('init', function() {
+                        // Pastikan textarea asli terlihat oleh TinyMCE setelah init
+                        this.getContainer().style.height = "100%";
+                    });
+                    editor.on('change', function () {
+                        tinymce.triggerSave();
+                    });
+                    // Custom button for "Save Page Content" form submission
+                    editor.ui.registry.addButton('savecontent', {
+                        text: 'Save Content',
+                        icon: 'save',
+                        onAction: function (_) {
+                            document.getElementById('pageContentForm').submit();
+                        }
+                    });
+                },
+                // Tambahkan 'savecontent' ke toolbar jika diinginkan, misal:
+                // toolbar: 'savecontent | undo redo | ... '
+            });
+        }
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl) });
+    });
+</script>
+<% } %>

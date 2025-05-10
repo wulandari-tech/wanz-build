@@ -1,3 +1,4 @@
+// src/models/Page.model.js
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
@@ -5,7 +6,11 @@ const pageSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Page name is required'], trim: true, default: 'Untitled Page' },
   path: { type: String, required: true, trim: true, default: '/' },
   website: { type: mongoose.Schema.Types.ObjectId, ref: 'Website', required: true },
-  structure: { type: Object, default: { elements: [] } },
+  // GANTI 'structure' DENGAN 'htmlContent'
+  htmlContent: {
+    type: String,
+    default: '<p>Start editing your page content here!</p>'
+  },
   order: { type: Number, default: 0 },
   seo: { title: String, description: String, keywords: String }
 }, { timestamps: true });
@@ -17,7 +22,7 @@ pageSchema.pre('save', function(next) {
     } else {
         this.path = '/';
     }
-  } else if (this.path && this.path !=='/') { // Pastikan path custom diawali '/'
+  } else if (this.path && this.path !=='/') {
     this.path = '/' + this.path.replace(/^\/+/, '');
   }
   next();
