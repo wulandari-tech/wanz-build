@@ -1,0 +1,165 @@
+/* WanzOFC Site Builder Custom Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #343a40;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+.navbar-brand .brand-highlight {
+    color: #0D6EFD; /* Bootstrap Primary Blue */
+}
+
+.footer {
+    background-color: #343a40;
+    color: #f8f9fa;
+    padding: 1.5rem 0;
+    margin-top: auto; /* Pushes footer to the bottom */
+}
+.footer a {
+    color: #adb5bd;
+}
+.footer a:hover {
+    color: #f8f9fa;
+}
+
+.card-form {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+.card-dashboard {
+    margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+    background-color: #0D6EFD;
+    border-color: #0D6EFD;
+}
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.site-preview-link {
+    font-size: 0.9rem;
+}
+
+/* Editor Styles (basic) */
+.editor-sidebar {
+    background-color: #e9ecef;
+    padding: 1rem;
+    min-height: calc(100vh - 56px - 70px); /* Adjust based on navbar and footer height */
+}
+.editor-main-content {
+    padding: 1rem;
+}
+.page-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #dee2e6;
+    margin-bottom: -1px; /* collapse borders */
+    background-color: #fff;
+}
+.page-list-item:first-child {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+.page-list-item:last-child {
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+    margin-bottom: 0;
+}
+.page-list-item a {
+    text-decoration: none;
+    color: #212529;
+}
+.page-list-item a.active {
+    font-weight: bold;
+    color: #0D6EFD;
+}
+.page-list-item .actions form {
+    display: inline;
+}
+.page-list-item .actions .btn-sm {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.75rem;
+}
+
+/* Style untuk textarea JSON */
+#pageStructureJson {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+    min-height: 300px;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    padding: .75rem;
+    background-color: #fff;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+/* Untuk website yang dibuat pengguna */
+.user-site-body {
+    font-family: var(--user-font-family, sans-serif);
+    background-color: var(--user-bg-color, #fff);
+    color: var(--user-text-color, #333);
+}
+.user-site-header {
+    background-color: var(--user-header-bg, #f0f0f0);
+    padding: 1rem;
+    text-align: center;
+}
+.user-site-nav ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+}
+.user-site-nav ul li {
+    display: inline-block;
+    margin: 0 10px;
+}
+.user-site-main {
+    padding: 1rem;
+    max-width: 960px;
+    margin: 0 auto;
+}
+.user-site-footer {
+    background-color: var(--user-footer-bg, #333);
+    color: var(--user-footer-text, #fff);
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+
+/* Landing page hero */
+.hero-section {
+    background: linear-gradient(45deg, #0D6EFD, #6f42c1);
+    color: white;
+    padding: 5rem 0;
+    text-align: center;
+}
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.hero-section p.lead {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+}
+.features-section {
+    padding: 3rem 0;
+}
+.feature-icon {
+    font-size: 3rem;
+    color: #0D6EFD;
+    margin-bottom: 1rem;
+}

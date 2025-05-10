@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<%= page.seo?.description || website.settings?.siteDescription || `Welcome to ${website.name}` %>">
+    <meta name="keywords" content="<%= page.seo?.keywords || website.settings?.siteKeywords || website.name %>">
+    <title><%= title %></title>
+    <% if (website.settings && website.settings.favicon) { %>
+        <link rel="icon" href="<%= website.settings.favicon %>" type="image/x-icon">
+    <% } %>
+    <!-- Default User Site Styles (bisa dioverride/ditambah dengan custom CSS) -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #fdfdfd;
+            color: #333;
+        }
+        .user-site-container { max-width: 960px; margin: 0 auto; padding: 0 15px; }
+        .user-site-header { background-color: #333; color: white; padding: 20px 0; text-align: center; }
+        .user-site-header h1 { margin: 0; font-size: 2.5em; }
+        .user-site-header h1 a { color: white; text-decoration: none; }
+        .user-site-nav { background-color: #444; padding: 10px 0; text-align: center; }
+        .user-site-nav ul { list-style: none; margin: 0; padding: 0; }
+        .user-site-nav ul li { display: inline-block; margin: 0 15px; }
+        .user-site-nav ul li a { color: #eee; text-decoration: none; font-weight: bold; }
+        .user-site-nav ul li a:hover { color: white; }
+        .user-site-main { padding: 30px 0; min-height: 60vh; }
+        .user-site-main h1, .user-site-main h2, .user-site-main h3 { color: #333; }
+        .user-site-main p { margin-bottom: 1em; }
+        .user-site-main img { max-width: 100%; height: auto; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .user-site-footer { background-color: #222; color: #aaa; text-align: center; padding: 20px 0; font-size: 0.9em; }
+        .user-site-footer a { color: #ccc; }
+    </style>
+    <% if (website.settings && website.settings.customCss) { %>
+        <style>
+            <%- website.settings.customCss %>
+        </style>
+    <% } %>
+</head>
+<body class="user-site-body">
+    <header class="user-site-header">
+        <div class="user-site-container">
+            <h1><a href="/s/<%= website.slug %>"><%= website.name %></a></h1>
+        </div>
+    </header>
+
+    <% if (navigationPages && navigationPages.length > 0) { %>
+    <nav class="user-site-nav">
+        <div class="user-site-container">
+            <ul>
+                <% navigationPages.forEach(navPage => { %>
+                    <li><a href="/s/<%= website.slug %><%= navPage.path %>" class="<%= (navPage.path === page.path) ? 'active' : '' %>"><%= navPage.name %></a></li>
+                <% }) %>
+            </ul>
+        </div>
+    </nav>
+    <% } %>
+
+    <main class="user-site-main">
+        <div class="user-site-container">
+            <% if (page.structure && page.structure.elements && page.structure.elements.length > 0) { %>
+                <% page.structure.elements.forEach(element => { %>
+                    <%- renderElement(element) %>
+                <% }); %>
+            <% } else { %>
+                <h2><%= page.name %></h2>
+                <p>This page is under construction. Check back soon!</p>
+            <% } %>
+        </div>
+    </main>
+
+    <footer class="user-site-footer">
+        <div class="user-site-container">
+            <p>© <%= new Date().getFullYear() %> <%= website.name %>. All Rights Reserved.
+            <% if (locals.websiteOwner) { %>
+                 Site by <%= websiteOwner.username %>.
+            <% } %>
+            Powered by <a href="https://wanzofc.com" target="_blank">WanzOFC Site Builder</a>.</p>
+        </div>
+    </footer>
+</body>
+</html>

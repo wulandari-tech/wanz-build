@@ -1,0 +1,10 @@
+const express = require('express');
+const authController = require('../../controllers/auth.controller');
+const { ensureGuest, protectView } = require('../../middlewares/auth.middleware');
+const router = express.Router();
+router.get('/login', ensureGuest, authController.getLoginPage);
+router.post('/login', ensureGuest, authController.loginUser);
+router.get('/register', ensureGuest, authController.getRegisterPage);
+router.post('/register', ensureGuest, authController.registerUser);
+router.get('/logout', protectView, authController.logoutUser);
+module.exports = router;

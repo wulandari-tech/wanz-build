@@ -1,0 +1,121 @@
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block editor-sidebar sidebar collapse">
+            <div class="position-sticky pt-3">
+                <h4 class="h5 px-3 mb-3 d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-sitemap me-2"></i><%= website.name %></span>
+                </h4>
+                <div class="px-3 mb-3">
+                    <% if (website.isPublished) { %>
+                        <form action="/dashboard/websites/<%= website._id %>/unpublish" method="POST" class="d-grid mb-1">
+                            <button type="submit" class="btn btn-warning btn-sm"><i class="fas fa-eye-slash me-1"></i>Unpublish</button>
+                        </form>
+                        <a href="/s/<%= website.slug %><%= currentPage ? currentPage.path : '' %>" target="_blank" class="btn btn-outline-secondary btn-sm d-block">
+                            <i class="fas fa-external-link-alt me-1"></i>View Live Page
+                        </a>
+                    <% } else { %>
+                        <form action="/dashboard/websites/<%= website._id %>/publish" method="POST" class="d-grid">
+                            <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-globe me-1"></i>Publish Site</button>
+                        </form>
+                    <% } %>
+                </div>
+
+                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span><i class="far fa-file-alt me-1"></i> Pages</span>
+                    <a class="link-secondary" href="/dashboard/websites/<%= website._id %>/pages/new" aria-label="Add new page" data-bs-toggle="tooltip" data-bs-placement="top" title="Add New Page">
+                        <i class="fas fa-plus-circle"></i>
+                    </a>
+                </h6>
+                <% if (pages && pages.length > 0) { %>
+                    <ul class="nav flex-column">
+                        <% pages.forEach(page => { %>
+                            <li class="nav-item page-list-item">
+                                <a href="/dashboard/websites/<%= website._id %>/edit?page=<%= encodeURIComponent(page.path) %>"
+                                   class="nav-link flex-grow-1 <%= (currentPage && currentPage.path === page.path) ? 'active fw-bold' : 'text-dark' %>">
+                                    <%= page.name %> <small class="text-muted">(<%= page.path %>)</small>
+                                </a>
+                                <% if (page.path !== '/') { %>
+                                <div class="actions">
+                                    <form action="/dashboard/websites/<%= website._id %>/pages/<%= page._id %>/delete" method="POST" class="delete-confirm">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="Delete Page">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                                <% } %>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p class="px-3 text-muted small">No pages yet. Click '+' to add one.</p>
+                <% } %>
+
+                 <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <span><i class="fas fa-cog me-1"></i> Settings</span>
+                </h6>
+                <ul class="nav flex-column mb-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="#">
+                           <i class="fas fa-paint-brush fa-fw me-2"></i> Appearance
+                        </a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link text-dark" href="#">
+                           <i class="fas fa-share-alt fa-fw me-2"></i> SEO & Sharing
+                        </a>
+                    </li>
+                </ul>
+
+
+                <div class="px-3 mt-auto pt-3 border-top">
+                    <a href="/dashboard" class="btn btn-outline-dark btn-sm w-100"><i class="fas fa-arrow-left me-1"></i>Back to Dashboard</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 editor-main-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <% if (currentPage) { %>
+                    <h1 class="h3">Editing Page: <span class="fw-normal"><%= currentPage.name %></span></h1>
+                <% } else { %>
+                     <h1 class="h3 text-danger">No Page Selected or Found</h1>
+                <% } %>
+                <!-- Actions for the current page/site -->
+            </div>
+
+            <%- include('../../partials/messages') %>
+
+            <% if (currentPage) { %>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                       <h5 class="mb-0"><i class="fas fa-puzzle-piece me-2"></i>Page Content Structure (JSON)</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text small text-muted">
+                            This is a raw JSON representation of your page's content. In a full visual editor, you would manipulate this through a drag-and-drop interface.
+                            For now, you can edit the JSON directly. Make sure it's valid JSON.
+                            Example: <code>{"elements": [{"type": "headline", "content": "My Title"}, {"type": "paragraph", "content": "Some text..."}]}</code>
+                        </p>
+                        <form action="/dashboard/websites/<%= website._id %>/pages/<%= currentPage._id %>/structure" method="POST">
+                            <div class="mb-3">
+                                <textarea name="structureData" id="pageStructureJson" class="form-control" rows="15"><%= JSON.stringify(currentPage.structure, null, 2) %></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Page Structure</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Placeholder for Visual Editor - This is where the major frontend work would be -->
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading"><i class="fas fa-tools me-2"></i>Visual Editor Coming Soon!</h4>
+                    <p>A more user-friendly, drag-and-drop visual editor will be implemented here to replace direct JSON editing.</p>
+                </div>
+            <% } else { %>
+                 <div class="alert alert-warning" role="alert">
+                    Please select a page from the sidebar to start editing, or <a href="/dashboard/websites/<%= website._id %>/pages/new">create a new page</a> if none exist.
+                </div>
+            <% } %>
+        </main>
+    </div>
+</div>
